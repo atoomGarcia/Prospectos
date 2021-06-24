@@ -1,0 +1,187 @@
+
+<%- include("./cabecera")%>
+
+<h1>Listado de prospectos</h1>
+<p>Sección que muestra los prospectos y sus estatus referente al proceso de selección.</p>
+
+<div>
+    <div id="datos">
+        <!-- Tabla donde se muestran los datos -->
+        <section class="data">
+            <template>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">NOMBRE</th>
+                            <th scope="col">APELLIDO PATERNO</th>
+                            <th scope="col">'APELLIDO MATERNO</th>
+                            <th scope="col">CALLE</th>
+                            <th scope="col">#</th>
+                            <th scope="col">COLONIA</th>
+                            <th scope="col">CP</th>
+                            <th scope="col">TELÉFONO</th>
+                            <th scope="col">RFC</th>
+                            <th scope="col">DOCUMENTOS</th>
+                            <th scope="col">ESTATUS</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(code, index) in idProspecto">
+                            <td>
+                                {{code.idProspecto}}
+                            </td>
+                            <td>
+                                {{code.nombre}}
+                            </td>
+                            <td>
+                                {{code.apPaterno}}
+                            </td>
+                            <td>
+                                {{code.apMaterno}}
+                            </td>
+                            <td>
+                                {{code.calle}}
+                            </td>
+                            <td>
+                                {{code.num}}
+                            </td>
+                            <td>
+                                {{code.colonia}}
+                            </td>
+                            <td>
+                                {{code.cp}}
+                            </td>
+                            <td>
+                                {{code.telefono}}
+                            </td>
+                            <td>
+                                {{code.rfc}}
+                            </td>
+                            <td>
+                                <button type="button"  class="btn btn-info" @click="obtieneid(code.idProspecto)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                   Agregar
+                                  </button>
+                            </td>
+                            <td>
+                                <select  @change="onChange($event,code.idProspecto)" class="form-control">
+                                    <option selected>{{code.Estado}}</option>
+                                    <option value="E">ENVIADO</option>
+                                    <option value="A">AUTORIZADO</option>
+                                    <option value="R">RECHAZADO</option>
+                                  </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </template>
+        </section>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Documentación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div id="app">
+                <form>
+                    <div class="row">
+                        <form>
+                            <div class="form-group">
+                              <label for="exampleFormControlFile1">Buscar Archivo</label>
+                              <input type="file" class="form-control-file" id="exampleFormControlFile1">
+                            </div>
+                        </form>    
+                    </div>
+                </form>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+ var datos = new Vue({
+                el: "#datos",
+                data: {
+                    idProspecto: "",
+                    id: "",
+                    idpros: "",
+                    obs: ""
+                },
+                created: function () {
+                    this.getProspectos();
+                },
+                methods: {
+                    Guardar: function () {
+                        alert("guardar");
+                    },
+                    getProspectos: function () {
+                        this.$http.get("http://localhost:3000/api").then(function (response) {
+                            this.idProspecto = response.body;
+                        })
+                    },
+                    obtieneid: function (i) {
+                        this.id=i;
+                    },
+                    onChange(event,idPros) {
+                        this.id=event.target.value;
+                        this.idpros=idPros;
+
+                        Swal.fire({
+                             title: "Observaciones",
+                            input: "textarea",
+                            showCancelButton: true,
+                            confirmButtonText: "Guardar",
+                            cancelButtonText: "Cancelar",
+                            inputValidator: obs => {
+                                // Si el valor es válido, debes regresar undefined. Si no, una cadena
+                                if (!obs) {
+                                    return "Es necesario escribir observaciones para actualizar el dato";
+                                } else {
+                                    return undefined;
+                                }
+                            }
+                        }).then(resultado => {
+                            if (resultado.value) {
+                               let obs = resultado.value;
+                                const prosp = {
+                                    "idProspecto": this.idpros,
+                                    "estatus": this.id,
+                                    "obs": this.obs
+                                };
+                                    this.$http.post("http://localhost:3000/api/change", prosp).then(
+                                        Swal.fire(
+                                            'Buen Trabajo!',
+                                            'Se ha actualizado el prospecto !',
+                                            'success'
+                                        )
+                                    /*this.$refs.demo.getUbicaciones()*/
+                                ).catch(error => {
+                                    this.errorMessage = error.message;
+                                })
+                            }
+                        });            
+                    }
+                }
+            });
+</script>
+
+
+<style lang="stylus" scoped>
+
+</style>
+
+
+<%- include("./footer")%> 
+
+

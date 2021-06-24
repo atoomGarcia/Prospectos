@@ -1,0 +1,178 @@
+
+<%- include("./cabecera")%>
+
+<h1>Insersión de prospectos</h1>
+<p>Sección para ingresar nuevos prospectos.</p>
+
+<div>
+  <div id="app">
+    <form>
+        <div class="row">
+            <div class="col-1">    
+                <label for="nombre" class="form-label">Nombre</label>
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" v-model="nombre">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="apaterno" class="form-label">Apellido Paterno</label>
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" v-model="apaterno">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="amaterno" class="form-label">Apellido Materno</label>
+            </div>
+            <div class="col-3">    
+                <input type="text" class="form-control" v-model="amaterno">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="calle" class="form-label">Calle</label>
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" v-model="calle">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="numero" class="form-label">Número</label>
+            </div>
+            <div class="col-3">
+                <input type="number" class="form-control" v-model="numero">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="colonia" class="form-label">Colonia</label>
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" v-model="colonia">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="cp" class="form-label">C.P.</label>
+            </div>
+            <div class="col-3">
+                <input type="number" class="form-control" v-model="cp">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="tel" class="form-label">Teléfono</label>
+            </div>
+            <div class="col-3">
+                <input type="number" class="form-control" v-model="tel">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <label for="rfc" class="form-label">RFC</label>
+            </div>
+            <div class="col-3">
+                <input type="text" class="form-control" v-model="rfc">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-1">
+                <button v-on:click.prevent="agregaArticulo()"  class="btn btn-success">Agregar</button>
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+     var app = new Vue({
+        el: "#app",
+        data: {
+            nombre: "",
+            apaterno: "",
+            amaterno: "",
+            calle: "",
+            numero: "",
+            colonia: "",
+            cp: "",
+            tel: "",
+            rfc: ""
+        },
+        created() {
+
+        },
+        methods: {
+            agregaArticulo: function () {
+                const prosp = {
+                        "nombre": this.nombre,
+                        "apPaterno": this.apaterno,
+                        "apMaterno": this.amaterno,
+                        "calle": this.calle,
+                        "num": this.numero,
+                        "colonia": this.colonia,
+                        "cp": this.cp,
+                        "telefono": this.tel,
+                        "rfc": this.rfc,
+                        "estatus": "E",
+                    };
+                if(this.nombre != "" && this.apaterno != "" && this.amaterno != "" && this.calle != "" && this.numero != "" && this.colonia != "" && this.cp != "" && this.tel != "" && this.rfc != ""){
+                    this.$http.post("http://localhost:3000/api", prosp).then(
+                            Swal.fire(
+                                'Buen Trabajo!',
+                                'Se ha ingresado el prospecto !',
+                                'success'
+                            ),
+                            this.nombre="",
+                            this.apaterno="",
+                            this.amaterno="",
+                            this.calle="",
+                            this.numero="",
+                            this.colonia="",
+                            this.cp="",
+                            this.tel="",
+                            this.rfc="",
+                        ).catch(error => {
+                            this.errorMessage = error.message;
+                        });
+                }
+                else{
+                    Swal.fire(
+                        'Atención!',
+                        'Al parecer alguno de los campos no fue ingresado correctamente, favor de verificar.',
+                        'warning'
+                    )
+
+                }
+                
+            }
+        }
+    });
+
+</script>
+
+
+  <style lang="stylus" scoped>
+      body {
+          font-family: Helvetica Neue, Arial, sans-serif;
+          font-size: 14px;
+          color: #444;
+      }
+  </style>
+
+<%- include("./footer")%> 
+
+
